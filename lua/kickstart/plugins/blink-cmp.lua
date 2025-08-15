@@ -72,13 +72,33 @@ return {
       completion = {
         -- By default, you may press `<c-space>` to show the documentation.
         -- Optionally, set `auto_show = true` to show the documentation after a delay.
-        documentation = { auto_show = false, auto_show_delay_ms = 500 },
+        documentation = { auto_show = true, auto_show_delay_ms = 500, max_width = 120, max_height = 40 },
       },
 
       sources = {
         default = { 'lsp', 'path', 'snippets', 'lazydev' },
         providers = {
           lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
+          lsp = {
+            name = 'LSP',
+            module = 'blink.cmp.sources.lsp',
+            enabled = true,
+            -- This ensures signature help capabilities are properly set
+            capabilities_override = {
+              textDocument = {
+                signatureHelp = {
+                  signatureInformation = {
+                    documentationFormat = { 'markdown', 'plaintext' },
+                    parameterInformation = {
+                      labelOffsetSupport = true,
+                    },
+                  },
+                  contextSupport = true,
+                  dynamicRegistration = false,
+                },
+              },
+            },
+          },
         },
       },
 
@@ -91,7 +111,7 @@ return {
       -- the rust implementation via `'prefer_rust_with_warning'`
       --
       -- See :h blink-cmp-config-fuzzy for more information
-      fuzzy = { implementation = 'lua' },
+      fuzzy = { implementation = 'prefer_rust_with_warning' },
 
       -- Shows a signature help window while you type arguments for a function
       signature = { enabled = true },

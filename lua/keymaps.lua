@@ -37,6 +37,14 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
+-- Neovide-specific keybindings
+if vim.g.neovide then
+  vim.keymap.set({ 'n', 'v' }, '<D-v>', '"+p', { desc = 'Paste from clipboard' })
+  vim.keymap.set('i', '<D-v>', '<C-r>+', { desc = 'Paste from clipboard' })
+  vim.keymap.set({ 'n', 'v' }, '<D-c>', '"+y', { desc = 'Copy to clipboard' })
+  vim.keymap.set({ 'n', 'v' }, '<D-x>', '"+x', { desc = 'Cut to clipboard' })
+end
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 

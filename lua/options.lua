@@ -26,6 +26,12 @@ end)
 -- Enable break indent
 vim.o.breakindent = true
 
+vim.o.tabstop = 4 -- show n spaces for each tab encountered
+vim.o.softtabstop = 4 -- replace 4 spaces with one tab/tabsize when inserting/pasting
+vim.o.shiftwidth = 4 -- one tab is four steps/number of steps used in autoindent
+vim.o.expandtab = true -- replace tabs with spaces, more sane option
+vim.o.shiftround = true -- use multiple of shiftwidth when indenting with < and >
+
 -- Save undo history
 vim.o.undofile = true
 
@@ -62,6 +68,8 @@ vim.o.inccommand = 'split'
 
 -- Show which line your cursor is on
 vim.o.cursorline = true
+vim.o.cursorcolumn = true
+vim.o.colorcolumn = '110'
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.o.scrolloff = 10
@@ -71,4 +79,15 @@ vim.o.scrolloff = 10
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
--- vim: ts=2 sts=2 sw=2 et
+vim.o.wildmenu = true -- visual auto-complete for command menu
+vim.o.wildmode = 'list:longest,full' -- Only complete to unique prefixes, but complete when insisting
+
+vim.o.wildignore = '*.swp,*.bak,*.pyc,*.class,*.o,.DS_Store,*.egg-info/,*/__pycache__/'
+
+-- Better handling of Japanese file encodings, fall back to common encodings used there
+vim.o.fileencoding = 'utf-8'
+vim.o.fileencodings = 'ucs-bom,utf8,iso-2022-jp,euc-jp,cp932,sjis,default,latin1'
+
+vim.opt.shortmess:append 'S'
+
+-- Uvim: ts=2 sts=2 sw=2 et
