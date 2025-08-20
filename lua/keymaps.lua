@@ -45,6 +45,21 @@ if vim.g.neovide then
   vim.keymap.set({ 'n', 'v' }, '<D-x>', '"+x', { desc = 'Cut to clipboard' })
 end
 
+-- Tab handling
+vim.keymap.set('n', '<localleader>t', '<Cmd>tabnew<CR>', { desc = 'Open a new tab' })
+vim.keymap.set('n', '[<Tab>', '<Cmd>tabprevious<CR>', { desc = 'Go to the previous tab' })
+vim.keymap.set('n', ']<Tab>', '<Cmd>tabnext<CR>', { desc = 'Go to the next tab' })
+vim.keymap.set('n', '<BS><Tab>', '<Cmd>bwipeout<CR>', { desc = 'Wipeout the current buffer' })
+
+vim.keymap.set('n', '<leader>tw', '<Cmd>set wrap!<CR>', { desc = '[T]oggle Text [w]rap' })
+
+-- Window handling
+vim.keymap.set('n', '[w', '<C-w>h', { desc = 'Move to the left window' })
+vim.keymap.set('n', ']w', '<C-w>l', { desc = 'Move to the right window' })
+vim.keymap.set('n', '[W', '<C-w>k', { desc = 'Move to the upper window' })
+vim.keymap.set('n', ']W', '<C-w>j', { desc = 'Move to the lower window' })
+vim.keymap.set('n', '<localleader><Tab>', '<C-w>w', { desc = 'Cycle through windows' })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -58,5 +73,12 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.hl.on_yank()
   end,
 })
+
+vim.keymap.set('n', 'gV', '`[v`]', { desc = 'Select the last inserted text' })
+
+-- Visual mode mappings
+vim.keymap.set('v', '<', '<gv', { desc = 'Decrease indent and stay in visual mode' })
+vim.keymap.set('v', '>', '>gv', { desc = 'Increase indent and stay in visual mode' })
+vim.keymap.set('v', 'p', '"_dP', { desc = 'Paste without replacing the default register' })
 
 -- vim: ts=2 sts=2 sw=2 et
