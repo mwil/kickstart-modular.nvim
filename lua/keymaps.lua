@@ -39,10 +39,11 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 
 -- Neovide-specific keybindings
 if vim.g.neovide then
-  vim.keymap.set({ 'n', 'v', 't' }, '<D-v>', '"+p', { desc = 'Paste from clipboard' })
+  vim.keymap.set({ 'n', 'v' }, '<D-v>', '"+p', { desc = 'Paste from clipboard' })
+  vim.keymap.set('t', '<D-v>', '<C-\\><C-n>"+pi', { desc = 'Paste from clipboard' })
   vim.keymap.set('i', '<D-v>', '<C-r>+', { desc = 'Paste from clipboard' })
-  vim.keymap.set({ 'n', 'v' }, '<D-c>', '"+y', { desc = 'Copy to clipboard' })
-  vim.keymap.set({ 'n', 'v' }, '<D-x>', '"+x', { desc = 'Cut to clipboard' })
+  vim.keymap.set({ 'n', 'v', 't' }, '<D-c>', '"+y', { desc = 'Copy to clipboard' })
+  vim.keymap.set({ 'n', 'v', 't' }, '<D-x>', '"+x', { desc = 'Cut to clipboard' })
 end
 
 -- Tab handling
