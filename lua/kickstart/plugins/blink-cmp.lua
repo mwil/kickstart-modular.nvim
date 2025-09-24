@@ -83,21 +83,6 @@ return {
             name = 'LSP',
             module = 'blink.cmp.sources.lsp',
             enabled = true,
-            -- This ensures signature help capabilities are properly set
-            capabilities_override = {
-              textDocument = {
-                signatureHelp = {
-                  signatureInformation = {
-                    documentationFormat = { 'markdown', 'plaintext' },
-                    parameterInformation = {
-                      labelOffsetSupport = true,
-                    },
-                  },
-                  contextSupport = true,
-                  dynamicRegistration = false,
-                },
-              },
-            },
           },
         },
       },

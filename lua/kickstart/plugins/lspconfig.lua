@@ -265,7 +265,7 @@ return {
       -- After mason-tool-installer setup:
       for server_name, config in pairs(servers) do
         config.capabilities = vim.tbl_deep_extend('force', {}, capabilities, config.capabilities or {})
-        require('lspconfig')[server_name].setup(config)
+        vim.lsp.config(server_name, config)
       end
     end,
   },
