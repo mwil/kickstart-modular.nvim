@@ -23,6 +23,54 @@ vim.schedule(function()
   vim.o.clipboard = 'unnamedplus'
 end)
 
+-- Helper functions for environment detection
+local function is_wsl()
+  local version_file = io.open('/proc/version', 'r')
+  if version_file then
+    local version = version_file:read '*all'
+    version_file:close()
+    return version:lower():match 'microsoft' or version:lower():match 'wsl'
+  end
+  return false
+end
+
+local function is_ssh()
+  return vim.env.SSH_CONNECTION ~= nil or vim.env.SSH_CLIENT ~= nil or vim.env.SSH_TTY ~= nil
+end
+
+-- Set clipboard based on environment
+if is_ssh() then
+  -- Over SSH: use OSC 52
+  vim.g.clipboard = {
+    name = 'OSC 52',
+    copy = {
+      ['+'] = require('vim.ui.clipboard.osc52').copy '+',
+      ['*'] = require('vim.ui.clipboard.osc52').copy '*',
+    },
+    paste = {
+      ['+'] = require('vim.ui.clipboard.osc52').paste '+',
+      ['*'] = require('vim.ui.clipboard.osc52').paste '*',
+    },
+  }
+elseif is_wsl() then
+  -- WSL: use win32yank
+  vim.g.clipboard = {
+    name = 'win32yank',
+    copy = {
+      ['+'] = 'win32yank.exe -i --crlf',
+      ['*'] = 'win32yank.exe -i --crlf',
+    },
+    paste = {
+      ['+'] = 'win32yank.exe -o --lf',
+      ['*'] = 'win32yank.exe -o --lf',
+    },
+    cache_enabled = 0,
+  }
+else
+  -- Native Linux: use system clipboard (xclip/xsel/wl-clipboard)
+  -- Neovim will auto-detect the best option, so no need to set anything
+end
+
 -- Enable break indent
 vim.o.breakindent = true
 
