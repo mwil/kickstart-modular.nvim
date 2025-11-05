@@ -238,8 +238,8 @@ return {
             return vim.fs.root(fname, '.git') or vim.fs.dirname(fname)
           end,
         },
+        jsonls = {},
         ruff = {},
-        black = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -266,6 +266,7 @@ return {
       for server_name, config in pairs(servers) do
         config.capabilities = vim.tbl_deep_extend('force', {}, capabilities, config.capabilities or {})
         vim.lsp.config(server_name, config)
+        vim.lsp.enable(server_name)
       end
     end,
   },
