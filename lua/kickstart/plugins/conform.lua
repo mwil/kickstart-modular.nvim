@@ -1,5 +1,6 @@
+-- conform.nvim
 return {
-  { -- Autoformat
+  {
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
     cmd = { 'ConformInfo' },
@@ -7,6 +8,7 @@ return {
       {
         '<leader>f',
         function()
+          -- prefer tool formatting over LSP for Python (ruff)
           require('conform').format { async = true, lsp_format = 'fallback' }
         end,
         mode = '',
@@ -15,31 +17,31 @@ return {
     },
     opts = {
       notify_on_error = false,
+
+      -- Keep your logic, but make Python use tool formatters (no LSP fallback)
       format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
+        local ft = vim.bo[bufnr].filetype
         local disable_filetypes = { c = true, cpp = true }
-        if disable_filetypes[vim.bo[bufnr].filetype] then
+        if disable_filetypes[ft] then
           return nil
-        else
-          return {
-            timeout_ms = 500,
-            lsp_format = 'fallback',
-          }
         end
+        -- For python, we explicitly turn off LSP fallback (we have ruff)
+        if ft == 'python' then
+          return { timeout_ms = 3000, lsp_format = false }
+        end
+        return { timeout_ms = 500, lsp_format = 'fallback' }
       end,
+
       formatters_by_ft = {
         lua = { 'stylua' },
-        -- Conform can also run multiple formatters sequentially
-        python = { 'isort', 'black' },
+
+        -- 🔁 Make Ruff match your pre-commit: fix, then format
+        -- If your hook only runs ruff-format (no --fix), use { "ruff_format" } instead.
+        python = { 'ruff_fix', 'ruff_format' },
+
         markdown = { 'prettier' },
         json = { 'prettier' },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
       },
     },
   },
 }
--- vim: ts=2 sts=2 sw=2 et
