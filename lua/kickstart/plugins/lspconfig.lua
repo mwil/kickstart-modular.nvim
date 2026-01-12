@@ -211,6 +211,8 @@ return {
         -- clangd = {},
         -- gopls = {},
         pyright = {
+          -- Use system pyright if available (NixOS), otherwise let Mason handle it
+          cmd = vim.fn.executable('pyright') == 1 and { 'pyright', '--stdio' } or nil,
           settings = {
             python = {
               analysis = {
@@ -224,7 +226,10 @@ return {
             },
           },
         },
-        rust_analyzer = {},
+        rust_analyzer = {
+          -- Use system rust-analyzer if available (NixOS), otherwise let Mason handle it
+          cmd = vim.fn.executable('rust-analyzer') == 1 and { 'rust-analyzer' } or nil,
+        },
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -235,7 +240,8 @@ return {
         --
 
         lua_ls = {
-          -- cmd = { ... },
+          -- Use system lua-language-server if available (NixOS), otherwise let Mason handle it
+          cmd = vim.fn.executable('lua-language-server') == 1 and { 'lua-language-server' } or nil,
           -- filetypes = { ... },
           -- capabilities = {},
           settings = {
@@ -251,7 +257,10 @@ return {
             return vim.fs.root(fname, '.git') or vim.fs.dirname(fname)
           end,
         },
-        jsonls = {},
+        jsonls = {
+          -- Use system vscode-json-languageserver if available (NixOS), otherwise let Mason handle it
+          cmd = vim.fn.executable('vscode-json-languageserver') == 1 and { 'vscode-json-languageserver', '--stdio' } or nil,
+        },
         ruff = {
           cmd = { 'ruff', 'server' }, -- this starts Ruff in LSP mode
           root_dir = require('lspconfig.util').root_pattern('pyproject.toml', 'ruff.toml', '.ruff.toml', '.git'),
@@ -278,9 +287,30 @@ return {
       -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
 
+      -- Skip LSPs in Mason if system versions are available (NixOS compatibility)
+      local system_lsps = {
+        ['lua_ls'] = 'lua-language-server',
+        ['pyright'] = 'pyright',
+        ['rust_analyzer'] = 'rust-analyzer',
+        ['jsonls'] = 'vscode-json-languageserver',
+      }
+      for mason_name, system_cmd in pairs(system_lsps) do
+        if vim.fn.executable(system_cmd) == 1 then
+          ensure_installed = vim.tbl_filter(function(key)
+            return key ~= mason_name
+          end, ensure_installed)
+        end
+      end
+
       vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
+        -- Only install stylua via Mason if system version is not available
+        vim.fn.executable('stylua') == 0 and 'stylua' or nil,
       })
+
+      -- Filter out nil values
+      ensure_installed = vim.tbl_filter(function(v)
+        return v ~= nil
+      end, ensure_installed)
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       -- After mason-tool-installer setup:

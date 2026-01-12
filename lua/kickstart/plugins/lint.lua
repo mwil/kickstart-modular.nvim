@@ -5,9 +5,44 @@ return {
     event = { 'BufReadPre', 'BufNewFile' },
     config = function()
       local lint = require 'lint'
+
+      -- Define markdownlint-cli2 as a custom linter (reuses markdownlint output format)
+      lint.linters.markdownlint_cli2 = {
+        name = 'markdownlint-cli2',
+        cmd = 'markdownlint-cli2',
+        stdin = false,
+        args = {},
+        stream = 'stdout',
+        ignore_exitcode = true,
+        parser = function(output, bufnr)
+          local diagnostics = {}
+          local regex = '^(.+):(%d+):(%d+) (%b[%]) (.+)$'
+          for line in output:gmatch('[^\r\n]+') do
+            local file, line_num, col_num, code, message = line:match(regex)
+            if file and line_num and col_num and message then
+              table.insert(diagnostics, {
+                lnum = tonumber(line_num) - 1,
+                col = tonumber(col_num) - 1,
+                end_lnum = tonumber(line_num) - 1,
+                end_col = tonumber(col_num) - 1,
+                severity = vim.diagnostic.severity.WARN,
+                message = message,
+                source = 'markdownlint',
+              })
+            end
+          end
+          return diagnostics
+        end,
+      }
+
+      -- Use markdownlint-cli2 if available, otherwise fall back to markdownlint
+      local markdown_linter = 'markdownlint'
+      if vim.fn.executable('markdownlint-cli2') == 1 then
+        markdown_linter = 'markdownlint_cli2'
+      end
+
       lint.linters_by_ft = {
-        -- install markdownlint-cli
-        markdown = { 'markdownlint' },
+        markdown = { markdown_linter },
       }
 
       -- To allow other plugins to add linters to require('lint').linters_by_ft,
